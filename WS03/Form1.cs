@@ -35,8 +35,8 @@ namespace WS03
             try
             {
                 Paciente paciente = new Paciente();
-                var quarto = paciente.quarto;
-                if (paciente.RegistroRepetido(txtNomePaciente.Text) == true)
+                var quarto = Convert.ToInt32(txtNumeroQuarto.Text);
+                if (paciente.RegistroRepetido(txtNomePaciente.Text) == false)
                 {
                     paciente.listanome(txtNomePaciente.Text);
                     
@@ -121,7 +121,7 @@ namespace WS03
                 txtNomeDoutor.Text = string.Empty;
                 cbxTipoQuarto.Text = string.Empty;
                 txtNumeroQuarto.Text = string.Empty;
-                List<Paciente> pacientes = new List<Paciente>();
+                List<Paciente> pacientes = paciente.listapaciente();
                 dgvPaciente.DataSource = pacientes;
 
             }
@@ -165,7 +165,7 @@ namespace WS03
             {
                 if (txtNumeroQuarto.Text == "")
                 {
-                    MessageBox.Show("Por favor Digite um Id para Localizar o Paciente!");
+                    MessageBox.Show("Por favor Digite um quarto para Localizar o Paciente!");
                 }
                 else
                 {

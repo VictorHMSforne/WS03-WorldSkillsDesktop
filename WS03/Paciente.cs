@@ -16,7 +16,7 @@ namespace WS03
         public string tipo_quarto { get; set; }
         public int quarto { get; set; }
 
-        SqlConnection conn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aluno\\Desktop\\teste\\WS03\\WS03\\DbEnfermagem.mdf;Integrated Security=True"); // dever de casa
+        SqlConnection conn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Aluno\\Desktop\\WS\\WS03\\DbEnfermagem.mdf;Integrated Security=True"); // dever de casa
         public List<Paciente> listapaciente()
         {
 
@@ -77,7 +77,7 @@ namespace WS03
         public void LocalizaQuarto(int quarto)
         {
             conn.Open();
-            string sql = "SELECT * FROM Paciente WHERE quarto='" + quarto + "'";
+            string sql = "SELECT * FROM Paciente WHERE quarto ='" + quarto + "'";
             SqlCommand cmd = new SqlCommand(sql, conn);
             SqlDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
@@ -151,40 +151,62 @@ namespace WS03
             if (result != null)
             {
                 conn.Close();
-                return true;
+                return false;
                 
             }
             conn.Close();
-            return false;
+            return true;
 
         }
 
         public bool ValidaQuarto(string tipo_quarto, int quarto)
         {
             conn.Open();
-            string sql = "SELECT tipo_quarto, (count(quarto)+1) as numero FROM Paciente WHERE quarto='" + quarto + "' AND tipo_quarto='"+tipo_quarto+"' GROUP BY tipo_quarto";
+            string sql = "SELECT tipo_quarto, count(quarto) as numero FROM Paciente WHERE quarto='" + quarto + "' AND tipo_quarto='"+tipo_quarto+"' GROUP BY tipo_quarto";
             SqlCommand cmd = new SqlCommand(sql, conn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
+            
+            cmd.ExecuteNonQuery();
+            var result = cmd.ExecuteScalar();
+            if (result == null)
             {
-                tipo_quarto = dr["tipo_quarto"].ToString().Trim();
-                quarto = (int)dr["numero"];
+                conn.Close();
+                return  false;
             }
-            var result = 0;
-            if (tipo_quarto == "Solteiro" && quarto <= 1)
+            else
             {
-                return (int)result > 0;
+                
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    tipo_quarto = dr["tipo_quarto"].ToString().Trim();
+                    quarto = (int)dr["numero"];
+                }
+                if (tipo_quarto == "Solteiro" && quarto == 1)
+                {
+                    return true;
+                }
+
+                if (tipo_quarto == "Duplo" && quarto == 2)
+                {
+                    return true;
+                }
+                else if (tipo_quarto == "Triplo" && quarto == 3)
+                {
+                    return true;
+                }
+                conn.Close();
+                return false;
             }
-            else if(tipo_quarto == "Duplo" || quarto <= 2 )
-            {
-                return (int)result > 0;
-            }
-            else if (tipo_quarto == "Triplo" && quarto <= 3)
-            {
-                return (int)result > 0;
-            }
-            conn.Close();
-            return false;
+            
+            
+            //   var result = 0;
+            //if (quarto == 1)
+            //{
+            //    quarto += 1;
+            //    return true;
+
+            //}
+            
         }
     }
 }
